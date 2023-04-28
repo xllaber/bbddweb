@@ -91,16 +91,12 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
             movie.getDirector().getId()
         );
         DBUtil.insert(connection, sql, params);
-        String sqlActors = """
-                    insert into actors_movies(actor_id, movie_id, characters) values (?, ?, ?)
-                    """;
         for (Actor actor : movie.getActors()) {
-            List<Object> paramsActor = List.of(
-                movie.getId(),
-                actor.getId(),
-                actor.getName()
-            );
-            DBUtil.insert(connection, sqlActors, paramsActor);
+            String sqlActors = """
+                    insert into actors_movies(actor_id, movie_id) values (?, ?)
+                """;
+
+            DBUtil.insert(connection, sqlActors, List.of(actor.getId(), movie.getId()));
         }
         DBUtil.closeConnection(connection);
     }

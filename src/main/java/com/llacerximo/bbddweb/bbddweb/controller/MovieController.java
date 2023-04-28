@@ -1,6 +1,5 @@
 package com.llacerximo.bbddweb.bbddweb.controller;
 
-import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -68,9 +67,7 @@ public class MovieController {
 
         String[] actorsArray = httpServletRequest.getParameterValues("actors");
         for (int i = 0; i < actorsArray.length; i++) {
-
-        System.out.println(actorsArray[i]);
-        movie.setActor(actorService.getById(actorsArray[i]));
+            movie.setActor(actorService.getById(actorsArray[i]));
         }
 
         movie.setDirector(directorService.getById(httpServletRequest.getParameter("director")));

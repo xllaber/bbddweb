@@ -10,7 +10,7 @@
     <a th:href="@{movies/insertMovie}">Insertar Película</a>
     <ul>
         <a th:each="movie : ${movies}" th:href="@{${'/movies/' + movie.id}}">
-            <li th:text="${movie.title}">Texto por defecto</li>
+            <li th:text="${movie.title}" >Texto por defecto</li>
         </a>
     </ul>
     <a th:href="@{/}">Back</a>
