@@ -37,7 +37,7 @@ public class DBUtil {
             PreparedStatement preparedStatement = setParameters(connection, sql, values);
             return preparedStatement.executeQuery();
         } catch (SQLException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 

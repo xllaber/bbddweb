@@ -11,7 +11,7 @@ import com.llacerximo.bbddweb.bbddweb.business.entity.Director;
 import com.llacerximo.bbddweb.bbddweb.business.entity.Movie;
 import com.llacerximo.bbddweb.bbddweb.database.DBUtil;
 import com.llacerximo.bbddweb.bbddweb.exceptions.ResourceNotFoundException;
-import com.llacerximo.bbddweb.bbddweb.persistence.ActorRepository;
+// import com.llacerximo.bbddweb.bbddweb.persistence.ActorRepository;
 import com.llacerximo.bbddweb.bbddweb.persistence.MovieRepository;
 
 public class JdbcMovieRepositoryImpl implements MovieRepository{
@@ -82,12 +82,13 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
     public void insert(Movie movie) throws SQLException {
         Connection connection = DBUtil.getConnection();
         String sql = """
-                insert into movies(imdb_id, title, year, director_id) values (?, ?, ?, ?)
+                insert into movies(imdb_id, title, year, runtime, director_id) values (?, ?, ?, ?, ?)
                 """;
         List<Object> params = List.of(
             movie.getId(), 
             movie.getTitle(), 
             movie.getYear(), 
+            movie.getRuntime(), 
             movie.getDirector().getId()
         );
         DBUtil.insert(connection, sql, params);
@@ -95,9 +96,17 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
             String sqlActors = """
                     insert into actors_movies(actor_id, movie_id) values (?, ?)
                 """;
-
             DBUtil.insert(connection, sqlActors, List.of(actor.getId(), movie.getId()));
         }
+        DBUtil.closeConnection(connection);
+    }
+
+    @Override
+    public void delete(String id) throws SQLException {
+        Connection connection = DBUtil.getConnection();
+        String sql = "delete from movies where imdb_id = ?";
+        List<Object> params = List.of(id);
+        DBUtil.delete(connection, sql, params);
         DBUtil.closeConnection(connection);
     }
     

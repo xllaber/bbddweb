@@ -36,5 +36,10 @@ public class MovieServiceImpl implements MovieService {
     public void insert(Movie movie) throws SQLException {
         movieRepository.insert(movie);
     }
+
+    @Override
+    public void delete(String id) throws SQLException {
+        movieRepository.delete(id);
+    }
     
 }

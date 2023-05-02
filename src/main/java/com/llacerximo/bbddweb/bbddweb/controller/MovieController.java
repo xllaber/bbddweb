@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.llacerximo.bbddweb.bbddweb.business.entity.Actor;
 import com.llacerximo.bbddweb.bbddweb.business.entity.Director;
@@ -74,6 +75,12 @@ public class MovieController {
 
         // movie.setActor(httpServletRequest.getParameter("actors"));
         movieService.insert(movie);
+        return "redirect:/movies";
+    }
+
+    @RequestMapping(value="/delete/{id}", method = RequestMethod.DELETE)
+    public String delete(@PathVariable String id) throws SQLException{
+        movieService.delete(id);
         return "redirect:/movies";
     }
 }
