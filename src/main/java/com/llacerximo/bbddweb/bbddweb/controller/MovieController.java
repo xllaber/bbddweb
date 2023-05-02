@@ -83,4 +83,13 @@ public class MovieController {
         movieService.delete(id);
         return "redirect:/movies";
     }
+
+    @GetMapping("/updateMovie/{id}")
+    public String update(Model model, HttpServletRequest httpServletRequest, @PathVariable String id) throws SQLException, ResourceNotFoundException{
+        model.addAttribute("directors", directorService.getAll());
+        model.addAttribute("actors", actorService.getAll());
+        model.addAttribute("movie", movieService.getById(id));
+        return "updateMovie";
+        
+    }
 }

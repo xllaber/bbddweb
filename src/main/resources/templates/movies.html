@@ -11,9 +11,14 @@
     <ul>
         <a th:each="movie : ${movies}" th:href="@{${'/movies/' + movie.id}}">
             <li th:text="${movie.title}" ></li>
-            <form action="#" th:action="@{'/movies/delete/{id}' (id=${movie.id})}" th:method="delete">
+            <form action="#" th:action="@{'/movies/delete/{id}' (id=${movie.id})}" th:method="delete" style="display: inline;">
                 <button type="submit">
                     Borrar
+                </button>
+            </form>
+            <form action="#" th:action="@{'/movies/updateMovie/{id}' (id=${movie.id})}" style="display: inline;">
+                <button type="submit">
+                    Actualizar
                 </button>
             </form>
         </a>
