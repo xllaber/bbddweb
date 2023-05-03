@@ -107,7 +107,7 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
     }
 
     @Override
-    public void update(Movie movie) throws SQLException, ResourceNotFoundException {
+    public void update(Movie movie) throws ResourceNotFoundException {
         try {
             Connection connection = DBUtil.getConnection();
             String sql = """
