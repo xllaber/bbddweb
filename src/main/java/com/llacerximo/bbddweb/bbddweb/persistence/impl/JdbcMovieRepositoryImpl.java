@@ -11,12 +11,9 @@ import com.llacerximo.bbddweb.bbddweb.business.entity.Director;
 import com.llacerximo.bbddweb.bbddweb.business.entity.Movie;
 import com.llacerximo.bbddweb.bbddweb.database.DBUtil;
 import com.llacerximo.bbddweb.bbddweb.exceptions.ResourceNotFoundException;
-// import com.llacerximo.bbddweb.bbddweb.persistence.ActorRepository;
 import com.llacerximo.bbddweb.bbddweb.persistence.MovieRepository;
 
 public class JdbcMovieRepositoryImpl implements MovieRepository{
-
-    // private ActorRepository actorRepository = new JdbcActorRepositoryImpl();
 
     @Override
     public List<Movie> getAll() {
@@ -67,7 +64,6 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
                     resultSet.getInt("deathYear")
                 );
                 movie.setDirector(director);
-                // movie.setActors(actorRepository.getByMovieId(id));
                 DBUtil.closeConnection(connection);
                 return movie;
             }else {
@@ -108,6 +104,36 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
         List<Object> params = List.of(id);
         DBUtil.delete(connection, sql, params);
         DBUtil.closeConnection(connection);
+    }
+
+    @Override
+    public void update(Movie movie) throws SQLException, ResourceNotFoundException {
+        try {
+            Connection connection = DBUtil.getConnection();
+            String sql = """
+                update movies
+                set title = ?,
+                set year = ?,
+                set runtime = ?,
+                set director_id = ?
+                where imdb_id = ?
+            """;
+            List<Object> params = List.of(
+                movie.getTitle(),
+                movie.getYear(),
+                movie.getRuntime(),
+                movie.getDirector().getId(),
+                movie.getId()
+            );
+            
+            if (DBUtil.update(connection, sql, params) <= 0) {
+                throw new ResourceNotFoundException("Pelicula no encontrada");
+            }
+            DBUtil.closeConnection(connection);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
     }
     
 }

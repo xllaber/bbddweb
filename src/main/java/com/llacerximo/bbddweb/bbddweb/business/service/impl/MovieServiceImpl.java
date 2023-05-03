@@ -41,5 +41,10 @@ public class MovieServiceImpl implements MovieService {
     public void delete(String id) throws SQLException {
         movieRepository.delete(id);
     }
+
+    @Override
+    public void update(Movie movie) throws SQLException {
+        movieRepository.update(movie);
+    }
     
 }

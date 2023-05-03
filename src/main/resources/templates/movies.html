@@ -11,7 +11,7 @@
     <ul>
         <a th:each="movie : ${movies}" th:href="@{${'/movies/' + movie.id}}">
             <li th:text="${movie.title}" ></li>
-            <form action="#" th:action="@{'/movies/delete/{id}' (id=${movie.id})}" th:method="delete" style="display: inline;">
+            <form action="#" th:action="@{${'/movies/' + movie.id}}" th:method="delete" style="display: inline;">
                 <button type="submit">
                     Borrar
                 </button>

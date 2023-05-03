@@ -8,7 +8,6 @@
 </head>
 <body>
     <form action="/movies" method="post" modelAttribute = "movie">
-        <label for="id">ID: </label>
         <input type="hidden" name="id" th:value="${movie.id}"><br>
 
         <label for="title">Title: </label>
@@ -22,13 +21,20 @@
 
         <label for="director">Director: </label>
         <select name="director" id="director">
-            <option th:each="director : ${directors}" th:value="${director.id}" 
-            th:text="${director.name}" th:selected="${movie.director.id}"></option>
+            <option th:each="director : ${directors}" 
+                th:value="${director.id}" 
+                th:text="${director.name}" 
+                th:selected="${director.id == movie.director.id}">
+            </option>
         </select><br>
         
         <label for="actors">Actors: </label>
         <select name="actors" id="actors" multiple size="10">
-            <option th:each="actor : ${actors}" th:value="${actor.id}" th:text="${actor.name}"></option>
+            <option th:each="actor : ${actors}" 
+                th:value="${actor.id}" 
+                th:text="${actor.name}"
+                th:selected="${movie.actors.contains(actor)}">
+            </option>
         </select><br>
         <input type="submit" name="insert">
     </form>
