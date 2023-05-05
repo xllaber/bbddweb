@@ -98,17 +98,16 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
     }
 
     @Override
-    public void delete(String id) throws SQLException {
-        Connection connection = DBUtil.getConnection();
-        String sql = "delete from movies where imdb_id = ?";
-        List<Object> params = List.of(id);
-        DBUtil.delete(connection, sql, params);
-        DBUtil.closeConnection(connection);
+    public void delete(String id) {
+            Connection connection = DBUtil.getConnection();
+            String sql = "delete from movies where imdb_id = ?";
+            List<Object> params = List.of(id);
+            DBUtil.delete(connection, sql, params);
+            DBUtil.closeConnection(connection);                
     }
 
     @Override
     public void update(Movie movie) throws ResourceNotFoundException {
-        try {
             Connection connection = DBUtil.getConnection();
             String sql = """
                 update movies
@@ -125,14 +124,20 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
                 movie.getDirector().getId(),
                 movie.getId()
             );
-            
-            if (DBUtil.update(connection, sql, params) <= 0) {
-                throw new ResourceNotFoundException("Pelicula no encontrada");
+            DBUtil.update(connection, sql, params);
+
+            /*Borrar actores*/
+            String deleteActors = "Delete from actors_movies where movie_id = ?";
+            DBUtil.delete(connection, deleteActors, List.of(movie.getId()));
+
+            /*Reinsertar actores*/
+            for (Actor actor : movie.getActors()) {
+                String sqlActors = """
+                    insert into actors_movies(actor_id, movie_id) values (?, ?)
+                """;
+                DBUtil.insert(connection, sqlActors, List.of(actor.getId(), movie.getId()));
             }
             DBUtil.closeConnection(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
         
     }
     

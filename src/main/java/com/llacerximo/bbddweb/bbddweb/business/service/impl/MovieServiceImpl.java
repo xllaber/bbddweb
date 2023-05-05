@@ -43,7 +43,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void update(Movie movie) throws SQLException {
+    public void update(Movie movie) throws SQLException, ResourceNotFoundException {
         movieRepository.update(movie);
     }
     
