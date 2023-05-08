@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.List;
 
 import com.llacerximo.bbddweb.bbddweb.business.entity.Actor;
@@ -70,7 +69,7 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
             }else {
                 throw new ResourceNotFoundException("Pelíclua no encontrada");
             }
-        } catch (InputMismatchException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -99,38 +98,47 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
     }
 
     @Override
-    public void delete(String id) throws SQLException {
-        Connection connection = DBUtil.getConnection();
-        String sql = "delete from movies where imdb_id = ?";
-        List<Object> params = List.of(id);
-        DBUtil.delete(connection, sql, params);
-        DBUtil.closeConnection(connection);
+    public void delete(String id) {
+            Connection connection = DBUtil.getConnection();
+            String sql = "delete from movies where imdb_id = ?";
+            List<Object> params = List.of(id);
+            DBUtil.delete(connection, sql, params);
+            DBUtil.closeConnection(connection);                
     }
 
     @Override
     public void update(Movie movie) throws ResourceNotFoundException {
-        Connection connection = DBUtil.getConnection();
-        String sql = """
-            update movies
-            set title = ?,
-            set year = ?,
-            set runtime = ?,
-            set director_id = ?
-            where imdb_id = ?
-        """;
-        List<Object> params = List.of(
-            movie.getTitle(),
-            movie.getYear(),
-            movie.getRuntime(),
-            movie.getDirector().getId(),
-            movie.getId()
-        );
+            Connection connection = DBUtil.getConnection();
+            String sql = """
+                update movies
+                set title = ?,
+                set year = ?,
+                set runtime = ?,
+                set director_id = ?
+                where imdb_id = ?
+            """;
+            List<Object> params = List.of(
+                movie.getTitle(),
+                movie.getYear(),
+                movie.getRuntime(),
+                movie.getDirector().getId(),
+                movie.getId()
+            );
+            DBUtil.update(connection, sql, params);
 
-        if (DBUtil.update(connection, sql, params) <= 0) {
-            throw new ResourceNotFoundException("Pelicula no encontrada");
-        }
-        DBUtil.closeConnection(connection);
+            /*Borrar actores*/
+            String deleteActors = "Delete from actors_movies where movie_id = ?";
+            DBUtil.delete(connection, deleteActors, List.of(movie.getId()));
 
+            /*Reinsertar actores*/
+            for (Actor actor : movie.getActors()) {
+                String sqlActors = """
+                    insert into actors_movies(actor_id, movie_id) values (?, ?)
+                """;
+                DBUtil.insert(connection, sqlActors, List.of(actor.getId(), movie.getId()));
+            }
+            DBUtil.closeConnection(connection);
+        
     }
     
 }

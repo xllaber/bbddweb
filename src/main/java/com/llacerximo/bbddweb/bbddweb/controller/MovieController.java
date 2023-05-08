@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.llacerximo.bbddweb.bbddweb.business.entity.Movie;
 import com.llacerximo.bbddweb.bbddweb.business.service.ActorService;
@@ -85,19 +85,24 @@ public class MovieController {
         return "updateMovie";
     }
 
-    @PostMapping("")
-    public String update(HttpServletRequest httpServletRequest) throws ResourceNotFoundException, SQLException{
-        String id = httpServletRequest.getParameter("id");
-        String title = httpServletRequest.getParameter("title");
-        int year = Integer.parseInt(httpServletRequest.getParameter("year"));
-        int runtime = Integer.parseInt(httpServletRequest.getParameter("runtime"));
-        Movie movie = new Movie(id, title, year, runtime);
-        String[] actorsArray = httpServletRequest.getParameterValues("actors");
-        for (int i = 0; i < actorsArray.length; i++) {
-            movie.setActor(actorService.getById(actorsArray[i]));
+    @PutMapping("/{id}")
+    public String update(HttpServletRequest httpServletRequest, @PathVariable String id) throws ResourceNotFoundException, SQLException{
+        try {
+            String title = httpServletRequest.getParameter("title");
+            int year = Integer.parseInt(httpServletRequest.getParameter("year"));
+            int runtime = Integer.parseInt(httpServletRequest.getParameter("runtime"));
+            Movie movie = new Movie(id, title, year, runtime);
+            String[] actorsArray = httpServletRequest.getParameterValues("actors");
+            for (int i = 0; i < actorsArray.length; i++) {
+                movie.setActor(actorService.getById(actorsArray[i]));
+            }
+            movie.setDirector(directorService.getById(httpServletRequest.getParameter("director")));
+            movieService.update(movie);
+            return "redirect:/movies";
+        } catch (Exception e) {
+            System.out.println("Error al actualizar");
+            return "error";
         }
-        movie.setDirector(directorService.getById(httpServletRequest.getParameter("director")));
-        movieService.update(movie);
-        return "redirect:/movies";
+        
     }
 }
