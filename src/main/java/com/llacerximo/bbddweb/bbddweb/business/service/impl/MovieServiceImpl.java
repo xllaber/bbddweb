@@ -44,7 +44,11 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void update(Movie movie) throws SQLException {
-        movieRepository.update(movie);
+        try {
+            movieRepository.update(movie);
+        } catch (ResourceNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
     
 }

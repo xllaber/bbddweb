@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 
 import com.llacerximo.bbddweb.bbddweb.business.entity.Actor;
@@ -69,7 +70,7 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
             }else {
                 throw new ResourceNotFoundException("Pelíclua no encontrada");
             }
-        } catch (SQLException e) {
+        } catch (InputMismatchException e) {
             throw new RuntimeException(e);
         }
     }
@@ -108,32 +109,28 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
 
     @Override
     public void update(Movie movie) throws ResourceNotFoundException {
-        try {
-            Connection connection = DBUtil.getConnection();
-            String sql = """
-                update movies
-                set title = ?,
-                set year = ?,
-                set runtime = ?,
-                set director_id = ?
-                where imdb_id = ?
-            """;
-            List<Object> params = List.of(
-                movie.getTitle(),
-                movie.getYear(),
-                movie.getRuntime(),
-                movie.getDirector().getId(),
-                movie.getId()
-            );
-            
-            if (DBUtil.update(connection, sql, params) <= 0) {
-                throw new ResourceNotFoundException("Pelicula no encontrada");
-            }
-            DBUtil.closeConnection(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        Connection connection = DBUtil.getConnection();
+        String sql = """
+            update movies
+            set title = ?,
+            set year = ?,
+            set runtime = ?,
+            set director_id = ?
+            where imdb_id = ?
+        """;
+        List<Object> params = List.of(
+            movie.getTitle(),
+            movie.getYear(),
+            movie.getRuntime(),
+            movie.getDirector().getId(),
+            movie.getId()
+        );
+
+        if (DBUtil.update(connection, sql, params) <= 0) {
+            throw new ResourceNotFoundException("Pelicula no encontrada");
         }
-        
+        DBUtil.closeConnection(connection);
+
     }
     
 }
