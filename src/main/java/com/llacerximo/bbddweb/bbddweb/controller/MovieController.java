@@ -30,6 +30,8 @@ public class MovieController {
     private DirectorService directorService = new DirectorServiceImpl();
     private ActorService actorService = new ActorServiceImpl();
 
+    private int MOVIES_PER_PAGE = 37;
+
     @GetMapping("")
     public String getAll(Model model){
         model.addAttribute("movies", movieService.getAll());
@@ -124,5 +126,20 @@ public class MovieController {
             return "error";
         }
         
+    }
+
+    /*
+    * Añadir comprobación de la existencia de las páginas
+    */
+    @GetMapping("?page={pageNum}")
+    public String paginate(@PathVariable int pageNum, Model model){
+        int pages[] = new int [movieService.count() / MOVIES_PER_PAGE];
+        for (int i = 0; i < pages.length; i++) {
+            pages[i] = i++;
+        }
+        int index = (MOVIES_PER_PAGE - 1) * 2;
+        model.addAttribute("pages", pages);
+        model.addAttribute("movies", movieService.paginate(index, MOVIES_PER_PAGE));
+        return "movies";
     }
 }

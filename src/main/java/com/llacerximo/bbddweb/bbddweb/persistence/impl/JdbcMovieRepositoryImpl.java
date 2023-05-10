@@ -151,5 +151,44 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
         }
 
     }
-    
+
+    @Override
+    public int count() {
+        try(Connection connection = DBUtil.getConnection()){
+            String sql = "Select count(*) from movies";
+            ResultSet resultSet = DBUtil.select(connection, sql, null);
+            int totalMovies = 0;
+            if (resultSet.next()){
+                totalMovies = resultSet.getInt(1);
+            }
+            return totalMovies;
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Movie> paginate(int index, int MOVIES_PER_PAGE) {
+        try(Connection connection = DBUtil.getConnection()){
+            List<Movie> movies = new ArrayList<>();
+            String sql = """
+                        select * from movies limit (?, ?)
+                    """;
+            ResultSet resultSet = DBUtil.select(connection, sql, List.of(index, MOVIES_PER_PAGE));
+            while(resultSet.next()){
+                Movie movie = new Movie(
+                        resultSet.getString("imdb_id"),
+                        resultSet.getString("title"),
+                        resultSet.getInt("year"),
+                        resultSet.getInt("runtime")
+                );
+                movies.add(movie);
+            }
+            return movies;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

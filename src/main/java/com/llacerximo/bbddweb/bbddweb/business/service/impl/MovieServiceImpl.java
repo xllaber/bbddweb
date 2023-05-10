@@ -50,5 +50,15 @@ public class MovieServiceImpl implements MovieService {
             throw new RuntimeException("Pelicula no encontrada");
         }
     }
-    
+
+    @Override
+    public List<Movie> paginate(int index, int MOVIES_PER_PAGE) {
+        return movieRepository.paginate(index, MOVIES_PER_PAGE);
+    }
+
+    @Override
+    public int count() {
+        return movieRepository.count();
+    }
+
 }

@@ -13,4 +13,6 @@ public interface MovieRepository {
     void insert(Movie movie) throws SQLException;
     void delete(String id) throws SQLException, ResourceNotFoundException;
     void update(Movie movie) throws SQLException, ResourceNotFoundException;
+    int count();
+    List<Movie> paginate(int index, int MOVIES_PER_PAGE);
 }
