@@ -38,7 +38,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void delete(String id) throws SQLException {
+    public void delete(String id) throws SQLException, ResourceNotFoundException {
         movieRepository.delete(id);
     }
 
@@ -47,7 +47,7 @@ public class MovieServiceImpl implements MovieService {
         try {
             movieRepository.update(movie);
         } catch (ResourceNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Pelicula no encontrada");
         }
     }
     

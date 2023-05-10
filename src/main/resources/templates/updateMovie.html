@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="/movies" th:method="put" modelAttribute = "movie">
+    <form th:action="@{${'/movies/' + movie.id}}" th:method="put" method="post">
         <input type="hidden" name="id" th:value="${movie.id}"><br>
 
         <label for="title">Title: </label>

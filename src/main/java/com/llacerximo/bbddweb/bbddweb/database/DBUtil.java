@@ -12,7 +12,7 @@ public class DBUtil {
     final static String URL = "localhost:3306";
     final static String DB = "imdb";
     final static String USER = "root";
-    final static String PASSWORD = "password";
+    final static String PASSWORD = "root";
 
     static String connectionString = String.format("%s://%s/%s?user=%s&password=%s", DRIVER, URL, DB, USER, PASSWORD);
 
@@ -55,7 +55,7 @@ public class DBUtil {
             PreparedStatement preparedStatement = setParameters(connection, sql, values);
             return preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException();
+            throw new RuntimeException("hola");
         }
     }
 

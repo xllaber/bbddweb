@@ -11,6 +11,6 @@ public interface MovieService {
     List<Movie> getAll();
     Movie getById(String id) throws SQLException, ResourceNotFoundException;
     void insert(Movie movie) throws SQLException;
-    void delete(String id) throws SQLException;
+    void delete(String id) throws SQLException, ResourceNotFoundException;
     void update(Movie movie) throws SQLException, ResourceNotFoundException;
 }

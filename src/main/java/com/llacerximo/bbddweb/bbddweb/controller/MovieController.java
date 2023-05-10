@@ -39,9 +39,13 @@ public class MovieController {
 
     @GetMapping("{id}")
     public String getById(Model model, @PathVariable String id) throws SQLException, ResourceNotFoundException{
-        model.addAttribute("movie", movieService.getById(id));
-        System.out.println(movieService.getById(id).getActors());
-        return "movie";
+        try{
+            model.addAttribute("movie", movieService.getById(id));
+            System.out.println(movieService.getById(id).getActors());
+            return "movie";
+        } catch (Exception e){
+            return "error";
+        }
     }
 
     @GetMapping("/insertMovie")
@@ -53,28 +57,41 @@ public class MovieController {
 
     @PostMapping("")
     public String insert(HttpServletRequest httpServletRequest) throws ResourceNotFoundException, SQLException{
-        
-        String id = httpServletRequest.getParameter("id");
-        String title = httpServletRequest.getParameter("title");
-        int year = Integer.parseInt(httpServletRequest.getParameter("year"));
-        int runtime = Integer.parseInt(httpServletRequest.getParameter("runtime"));
-        Movie movie = new Movie(id, title, year, runtime);
+        try {
+            String id = httpServletRequest.getParameter("id");
+            String title = httpServletRequest.getParameter("title");
+            int year = Integer.parseInt(httpServletRequest.getParameter("year"));
+            int runtime = Integer.parseInt(httpServletRequest.getParameter("runtime"));
+            Movie movie = new Movie(id, title, year, runtime);
 
-        String[] actorsArray = httpServletRequest.getParameterValues("actors");
-        for (int i = 0; i < actorsArray.length; i++) {
-            movie.setActor(actorService.getById(actorsArray[i]));
+            String[] actorsArray = httpServletRequest.getParameterValues("actors");
+            for (int i = 0; i < actorsArray.length; i++) {
+                movie.setActor(actorService.getById(actorsArray[i]));
+            }
+
+            movie.setDirector(directorService.getById(httpServletRequest.getParameter("director")));
+
+            movieService.insert(movie);
+            return "redirect:/movies";
+        } catch (ResourceNotFoundException e){
+            System.out.println("No se ha encontrado el director o los actores");
+            return "error";
+        } catch (Exception e) {
+            return "error";
         }
-
-        movie.setDirector(directorService.getById(httpServletRequest.getParameter("director")));
-
-        movieService.insert(movie);
-        return "redirect:/movies";
     }
 
     @DeleteMapping("{id}")
     public String delete(@PathVariable String id) throws SQLException{
-        movieService.delete(id);
-        return "redirect:/movies";
+        try {
+            movieService.delete(id);
+            return "redirect:/movies";
+        } catch (ResourceNotFoundException e){
+            System.out.println("NO se ha encontrado la pelicula");
+            return "error";
+        } catch (Exception e){
+            return "error";
+        }
     }
 
     @GetMapping("/updateMovie/{id}")
@@ -97,10 +114,13 @@ public class MovieController {
                 movie.setActor(actorService.getById(actorsArray[i]));
             }
             movie.setDirector(directorService.getById(httpServletRequest.getParameter("director")));
+//            System.out.println(movie);
             movieService.update(movie);
             return "redirect:/movies";
-        } catch (Exception e) {
-            System.out.println("Error al actualizar");
+        } catch (ResourceNotFoundException e) {
+            System.out.println("No se ha encontrado la pelicula");
+            return "error";
+        } catch (Exception e){
             return "error";
         }
         

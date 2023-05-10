@@ -76,53 +76,60 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
 
     @Override
     public void insert(Movie movie) throws SQLException {
-        Connection connection = DBUtil.getConnection();
-        String sql = """
+        try (Connection connection = DBUtil.getConnection();){
+            String sql = """
                 insert into movies(imdb_id, title, year, runtime, director_id) values (?, ?, ?, ?, ?)
                 """;
-        List<Object> params = List.of(
-            movie.getId(), 
-            movie.getTitle(), 
-            movie.getYear(), 
-            movie.getRuntime(), 
-            movie.getDirector().getId()
-        );
-        DBUtil.insert(connection, sql, params);
-        for (Actor actor : movie.getActors()) {
-            String sqlActors = """
+            List<Object> params = List.of(
+                    movie.getId(),
+                    movie.getTitle(),
+                    movie.getYear(),
+                    movie.getRuntime(),
+                    movie.getDirector().getId()
+            );
+            DBUtil.insert(connection, sql, params);
+            for (Actor actor : movie.getActors()) {
+                String sqlActors = """
                     insert into actors_movies(actor_id, movie_id) values (?, ?)
                 """;
-            DBUtil.insert(connection, sqlActors, List.of(actor.getId(), movie.getId()));
+                DBUtil.insert(connection, sqlActors, List.of(actor.getId(), movie.getId()));
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
         }
-        DBUtil.closeConnection(connection);
     }
 
     @Override
-    public void delete(String id) {
-            Connection connection = DBUtil.getConnection();
+    public void delete(String id) throws ResourceNotFoundException {
+        try (Connection connection = DBUtil.getConnection()){
             String sql = "delete from movies where imdb_id = ?";
             List<Object> params = List.of(id);
-            DBUtil.delete(connection, sql, params);
-            DBUtil.closeConnection(connection);                
+            if (DBUtil.delete(connection, sql, params) < 0){
+                throw new ResourceNotFoundException("Pelicula no encontrada");
+            };
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void update(Movie movie) throws ResourceNotFoundException {
-            Connection connection = DBUtil.getConnection();
+        try (Connection connection = DBUtil.getConnection();){
+
             String sql = """
-                update movies
-                set title = ?,
-                set year = ?,
-                set runtime = ?,
-                set director_id = ?
-                where imdb_id = ?
-            """;
+                        UPDATE movies SET
+                            title = ?,
+                            year = ?,
+                            runtime = ?,
+                            director_id = ?
+                        WHERE imdb_id = ?
+                    """;
             List<Object> params = List.of(
-                movie.getTitle(),
-                movie.getYear(),
-                movie.getRuntime(),
-                movie.getDirector().getId(),
-                movie.getId()
+                    movie.getTitle(),
+                    movie.getYear(),
+                    movie.getRuntime(),
+                    movie.getDirector().getId(),
+                    movie.getId()
             );
             DBUtil.update(connection, sql, params);
 
@@ -138,7 +145,11 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
                 DBUtil.insert(connection, sqlActors, List.of(actor.getId(), movie.getId()));
             }
             DBUtil.closeConnection(connection);
-        
+
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+
     }
     
 }
