@@ -23,6 +23,11 @@
             </form>
         </a>
     </ul>
+    <ul>
+        <a th:each="page : ${pages}" th:href="@{${'/movies/?page=' + movie.id}}">
+            <span th:text="${page}">HOla</span>
+        </a>
+    </ul>
     <a th:href="@{/}">Back</a>
 </body>
 </html>

@@ -34,8 +34,11 @@ public class MovieController {
 
     @GetMapping("")
     public String getAll(Model model){
+//        HttpServletRequest httpServletRequest.getParameter(page);
+//        HttpServletRequest httpServletRequest.getParameterMap().containsKey("page");
         model.addAttribute("movies", movieService.getAll());
         System.out.println("Lista de peliculas");
+        System.out.println("getAll controller");
         return "movies";
     }
 
@@ -137,9 +140,10 @@ public class MovieController {
         for (int i = 0; i < pages.length; i++) {
             pages[i] = i++;
         }
-        int index = (MOVIES_PER_PAGE - 1) * 2;
+        int index = (pageNum - 1) * 2;
         model.addAttribute("pages", pages);
         model.addAttribute("movies", movieService.paginate(index, MOVIES_PER_PAGE));
-        return "movies";
+        System.out.println(pages);
+        return "redirect: /movies";
     }
 }
