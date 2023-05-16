@@ -51,7 +51,7 @@ public class JdbcMovieRepositoryImpl implements MovieRepository{
             List<Object> params = List.of(id);
             ResultSet resultSet = DBUtil.select(connection, slq, params);
             if (resultSet.next()) {
-                    Movie movie = new Movie(
+                Movie movie = new Movie(
                     resultSet.getString("imdb_id"),
                     resultSet.getString("title"),
                     resultSet.getInt("year"),
